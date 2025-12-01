@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: newsfilter-backend
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/newsfilter}
+      auto-index-creation: true
+server:
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    root: INFO
+
+internal:
+  api:
+    key: ${INTERNAL_API_KEY:change-me}
