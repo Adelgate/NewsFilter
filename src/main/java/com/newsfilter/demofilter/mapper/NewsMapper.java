@@ -1,8 +1,8 @@
 package com.newsfilter.demofilter.mapper;
 
-import com.newsfilter.dto.NewsRequest;
-import com.newsfilter.dto.NewsResponse;
-import com.newsfilter.entity.News;
+import com.newsfilter.demofilter.dto.NewsRequest;
+import com.newsfilter.demofilter.dto.NewsResponse;
+import com.newsfilter.demofilter.entity.News;
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,3 +27,5 @@ public interface NewsMapper {
         return id != null ? id.toHexString() : null;
     }
 }
+
+
