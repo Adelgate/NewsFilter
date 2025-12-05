@@ -16,6 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -54,7 +55,7 @@ class NewsControllerIT {
                 List.of("ai", "spring"));
 
         mockMvc.perform(post("/api/news/bulk")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
                 .content(objectMapper.writeValueAsString(List.of(request))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[0].id").exists());

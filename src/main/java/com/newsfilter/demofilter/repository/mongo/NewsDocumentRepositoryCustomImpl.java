@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class NewsDocumentRepositoryCustomImpl implements NewsDocumentRepositoryC
             criteria.add(Criteria.where("sourceId").is(sourceId));
         }
 
-        if (!CollectionUtils.isEmpty(topics)) {
+        if (topics != null && !topics.isEmpty()) {
             criteria.add(Criteria.where("topics").in(topics));
         }
 
@@ -41,6 +40,9 @@ public class NewsDocumentRepositoryCustomImpl implements NewsDocumentRepositoryC
 
     @Override
     public List<NewsDocument> searchByText(String text, int limit) {
+        if (text == null || text.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
         TextCriteria criteria = TextCriteria.forDefaultLanguage().matching(text);
         Query query = TextQuery.queryText(criteria).sortByScore().limit(limit);
         return mongoTemplate.find(query, NewsDocument.class);

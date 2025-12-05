@@ -1,10 +1,8 @@
 package com.newsfilter.demofilter.service;
 
-import com.newsfilter.demofilter.dto.NewsResponse;
-import com.newsfilter.demofilter.entity.News;
 import com.newsfilter.demofilter.exception.BadRequestException;
 import com.newsfilter.demofilter.mapper.NewsMapper;
-import com.newsfilter.demofilter.repository.NewsRepository;
+import com.newsfilter.demofilter.repository.mongo.NewsDocumentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +21,7 @@ import static org.mockito.Mockito.when;
 class SearchServiceTest {
 
     @Mock
-    private NewsRepository newsRepository;
+    private NewsDocumentRepository newsDocumentRepository;
     @Mock
     private NewsMapper newsMapper;
 
@@ -37,11 +35,11 @@ class SearchServiceTest {
 
     @Test
     void search_shouldDelegateToRepository() {
-        when(newsRepository.searchByText(anyString(), anyInt())).thenReturn(List.of());
+        when(newsDocumentRepository.searchByText(anyString(), anyInt())).thenReturn(List.of());
         when(newsMapper.toResponseList(List.of())).thenReturn(List.of());
 
         searchService.search("ai", 5);
 
-        verify(newsRepository).searchByText("ai", 5);
+        verify(newsDocumentRepository).searchByText("ai", 5);
     }
 }

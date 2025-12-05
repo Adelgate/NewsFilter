@@ -1,7 +1,7 @@
 package com.newsfilter.demofilter.service;
 
-import com.newsfilter.demofilter.repository.NewsRepository;
-import com.newsfilter.demofilter.repository.TopicAggregation;
+import com.newsfilter.demofilter.repository.mongo.NewsDocumentRepository;
+import com.newsfilter.demofilter.repository.mongo.TopicAggregation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 class TopicServiceTest {
 
     @Mock
-    private NewsRepository newsRepository;
+    private NewsDocumentRepository newsDocumentRepository;
 
     @InjectMocks
     private TopicService topicService;
@@ -26,7 +26,7 @@ class TopicServiceTest {
     void getAllTopics_shouldReturnSortedUniqueTopics() {
         TopicAggregation first = () -> "ai";
         TopicAggregation second = () -> "finance";
-        when(newsRepository.aggregateTopics()).thenReturn(List.of(second, first));
+        when(newsDocumentRepository.aggregateTopics()).thenReturn(List.of(second, first));
 
         List<String> topics = topicService.getAllTopics();
 
