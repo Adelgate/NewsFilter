@@ -10,19 +10,55 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
+import com.newsfilter.demofilter.domain.jpa.Source;
+import com.newsfilter.demofilter.repository.jpa.SourceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface NewsMapper {
+public abstract class NewsMapper {
+
+    @Autowired
+    protected SourceRepository sourceRepository;
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "fetchedAt", ignore = true)
-    NewsDocument toDocument(NewsRequest request);
+    @Mapping(target = "content", source = "text")
+    @Mapping(target = "imageUrl", source = "mediaUrl")
+    @Mapping(target = "publishedAt", source = "postedAt")
+    @Mapping(target = "url", source = "link")
+    @Mapping(target = "sourceId", expression = "java(resolveSourceId(request.source()))")
+    public abstract NewsDocument toDocument(NewsRequest request);
 
     @Mapping(target = "id", expression = "java(mapId(newsDocument.getId()))")
-    NewsResponse toResponse(NewsDocument newsDocument);
+    @Mapping(target = "text", source = "content")
+    @Mapping(target = "mediaUrl", source = "imageUrl")
+    @Mapping(target = "postedAt", source = "publishedAt")
+    @Mapping(target = "link", source = "url")
+    @Mapping(target = "source", expression = "java(resolveSourceName(newsDocument.getSourceId()))")
+    @Mapping(target = "createdAt", source = "fetchedAt")
+    public abstract NewsResponse toResponse(NewsDocument newsDocument);
 
-    List<NewsResponse> toResponseList(List<NewsDocument> newsDocuments);
+    public abstract List<NewsResponse> toResponseList(List<NewsDocument> newsDocuments);
 
-    default String mapId(ObjectId id) {
+    protected String mapId(ObjectId id) {
         return id != null ? id.toHexString() : null;
+    }
+
+    protected Long resolveSourceId(String outputSourceName) {
+        if (outputSourceName == null) {
+            return null;
+        }
+        return sourceRepository.findByName(outputSourceName)
+                .map(Source::getId)
+                .orElse(null);
+    }
+
+    protected String resolveSourceName(Long sourceId) {
+        if (sourceId == null) {
+            return null;
+        }
+        return sourceRepository.findById(sourceId)
+                .map(Source::getName)
+                .orElse(null);
     }
 }

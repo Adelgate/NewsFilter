@@ -8,7 +8,7 @@ plugins {
 
 group = "com.newsfilter"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_23
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 repositories {
 	mavenCentral()
@@ -17,6 +17,12 @@ repositories {
 configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
+	}
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.testcontainers:testcontainers-bom:1.19.8")
 	}
 }
 
@@ -51,6 +57,7 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:postgresql")
+	testImplementation("com.h2database:h2")
 }
 
 tasks.withType<Test> {
@@ -59,7 +66,7 @@ tasks.withType<Test> {
 
 java {
 	toolchain {
-		languageVersion.set(JavaLanguageVersion.of(23))
+		languageVersion.set(JavaLanguageVersion.of(21))
 	}
 }
 
