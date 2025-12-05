@@ -1,7 +1,7 @@
 package com.newsfilter.demofilter.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newsfilter.dto.NewsRequest;
+import com.newsfilter.demofilter.dto.NewsRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -51,12 +51,11 @@ class NewsControllerIT {
                 null,
                 Instant.now(),
                 "https://example.com/ai",
-                List.of("ai", "spring")
-        );
+                List.of("ai", "spring"));
 
         mockMvc.perform(post("/api/news/bulk")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(List.of(request))))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(List.of(request))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[0].id").exists());
 

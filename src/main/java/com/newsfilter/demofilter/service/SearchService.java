@@ -1,10 +1,10 @@
 package com.newsfilter.demofilter.service;
 
-import com.newsfilter.dto.NewsResponse;
-import com.newsfilter.entity.News;
-import com.newsfilter.exception.BadRequestException;
-import com.newsfilter.mapper.NewsMapper;
-import com.newsfilter.repository.NewsRepository;
+import com.newsfilter.demofilter.domain.mongo.NewsDocument;
+import com.newsfilter.demofilter.dto.NewsResponse;
+import com.newsfilter.demofilter.exception.BadRequestException;
+import com.newsfilter.demofilter.mapper.NewsMapper;
+import com.newsfilter.demofilter.repository.mongo.NewsDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class SearchService {
 
-    private final NewsRepository newsRepository;
+    private final NewsDocumentRepository newsDocumentRepository;
     private final NewsMapper newsMapper;
 
     public List<NewsResponse> search(String query, Integer limit) {
@@ -25,7 +25,7 @@ public class SearchService {
             throw new BadRequestException("Query parameter 'q' is required");
         }
         int boundedLimit = limit == null ? 20 : Math.min(Math.max(limit, 1), 100);
-        List<News> result = newsRepository.searchByText(query, boundedLimit);
+        List<NewsDocument> result = newsDocumentRepository.searchByText(query, boundedLimit);
         log.debug("Search for '{}' returned {} results", query, result.size());
         return newsMapper.toResponseList(result);
     }

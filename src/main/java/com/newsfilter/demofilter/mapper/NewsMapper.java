@@ -1,8 +1,8 @@
 package com.newsfilter.demofilter.mapper;
 
-import com.newsfilter.dto.NewsRequest;
-import com.newsfilter.dto.NewsResponse;
-import com.newsfilter.entity.News;
+import com.newsfilter.demofilter.domain.mongo.NewsDocument;
+import com.newsfilter.demofilter.dto.NewsRequest;
+import com.newsfilter.demofilter.dto.NewsResponse;
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,14 +14,13 @@ import java.util.List;
 public interface NewsMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "score", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    News toEntity(NewsRequest request);
+    @Mapping(target = "fetchedAt", ignore = true)
+    NewsDocument toDocument(NewsRequest request);
 
-    @Mapping(target = "id", expression = "java(mapId(news.getId()))")
-    NewsResponse toResponse(News news);
+    @Mapping(target = "id", expression = "java(mapId(newsDocument.getId()))")
+    NewsResponse toResponse(NewsDocument newsDocument);
 
-    List<NewsResponse> toResponseList(List<News> news);
+    List<NewsResponse> toResponseList(List<NewsDocument> newsDocuments);
 
     default String mapId(ObjectId id) {
         return id != null ? id.toHexString() : null;

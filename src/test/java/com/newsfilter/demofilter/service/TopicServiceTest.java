@@ -1,7 +1,7 @@
 package com.newsfilter.demofilter.service;
 
-import com.newsfilter.repository.NewsRepository;
-import com.newsfilter.repository.TopicAggregation;
+import com.newsfilter.demofilter.repository.NewsRepository;
+import com.newsfilter.demofilter.repository.TopicAggregation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
