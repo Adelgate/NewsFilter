@@ -1,8 +1,8 @@
 package com.newsfilter.demofilter.mapper;
 
+import com.newsfilter.demofilter.domain.mongo.NewsDocument;
 import com.newsfilter.demofilter.dto.NewsRequest;
 import com.newsfilter.demofilter.dto.NewsResponse;
-import com.newsfilter.demofilter.entity.News;
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,19 +13,37 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface NewsMapper {
 
+    // Basic mapping - service will handle additional fields
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "score", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    News toEntity(NewsRequest request);
+    @Mapping(target = "sourceId", ignore = true)
+    @Mapping(target = "title", ignore = true) // Will be extracted from text
+    @Mapping(target = "content", source = "text")
+    @Mapping(target = "summary", ignore = true) // Can be generated later
+    @Mapping(target = "author", ignore = true)
+    @Mapping(target = "imageUrl", source = "mediaUrl")
+    @Mapping(target = "publishedAt", source = "postedAt")
+    @Mapping(target = "url", source = "link")
+    @Mapping(target = "fetchedAt", ignore = true)
+    @Mapping(target = "rawPayload", ignore = true)
+    @Mapping(target = "metadata", ignore = true)
+    NewsDocument toDocument(NewsRequest request);
 
-    @Mapping(target = "id", expression = "java(mapId(news.getId()))")
-    NewsResponse toResponse(News news);
+    @Mapping(target = "id", expression = "java(mapId(newsDocument.getId()))")
+    @Mapping(target = "source", expression = "java(mapSourceId(newsDocument.getSourceId()))")
+    @Mapping(target = "text", source = "content")
+    @Mapping(target = "mediaUrl", source = "imageUrl")
+    @Mapping(target = "postedAt", source = "publishedAt")
+    @Mapping(target = "link", source = "url")
+    @Mapping(target = "createdAt", source = "fetchedAt")
+    NewsResponse toResponse(NewsDocument newsDocument);
 
-    List<NewsResponse> toResponseList(List<News> news);
+    List<NewsResponse> toResponseList(List<NewsDocument> newsDocuments);
 
     default String mapId(ObjectId id) {
         return id != null ? id.toHexString() : null;
     }
+
+    default String mapSourceId(Long sourceId) {
+        return sourceId != null ? "source-" + sourceId : "unknown";
+    }
 }
-
-

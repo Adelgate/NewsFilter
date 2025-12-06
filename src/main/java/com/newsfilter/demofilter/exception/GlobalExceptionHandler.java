@@ -3,6 +3,7 @@ package com.newsfilter.demofilter.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,12 +27,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedAccessException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedAccessException ex,
+            HttpServletRequest request) {
         return buildResponse(HttpStatus.UNAUTHORIZED, "Unauthorized", ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
         String message = ex.getBindingResult().getFieldErrors().stream()
                 .findFirst()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
@@ -48,7 +52,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
+            HttpServletRequest request) {
         String message = String.format("Invalid value '%s' for parameter '%s'", ex.getValue(), ex.getName());
         return buildResponse(HttpStatus.BAD_REQUEST, "BadRequest", message, request.getRequestURI());
     }
@@ -58,8 +63,9 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "ServerError", ex.getMessage(), request.getRequestURI());
     }
 
-    private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String error, String message, String path) {
+    private ResponseEntity<ErrorResponse> buildResponse(HttpStatusCode status, String error, String message,
+            String path) {
         ErrorResponse response = new ErrorResponse(error, message, Instant.now(), path);
-        return ResponseEntity.status(status).body(response);
+        return ResponseEntity.status(Objects.requireNonNull(status)).body(response);
     }
 }

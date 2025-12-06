@@ -1,10 +1,30 @@
 spring:
   application:
     name: newsfilter-backend
+  
+  # MongoDB Configuration
   data:
     mongodb:
       uri: ${MONGODB_URI:mongodb://localhost:27017/newsfilter}
       auto-index-creation: true
+  
+  # PostgreSQL Configuration
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/newsfilter}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  
+  # JPA/Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
 server:
   servlet:
     context-path: /
@@ -12,6 +32,8 @@ server:
 logging:
   level:
     root: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 internal:
   api:

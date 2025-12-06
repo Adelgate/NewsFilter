@@ -1,5 +1,7 @@
 version: '3.9'
+
 services:
+  # MongoDB for News entities
   mongo:
     image: mongo:7.0.14
     restart: unless-stopped
@@ -7,15 +9,38 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=newsfilter
+
+  # PostgreSQL for Category entities
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=newsfilter
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  # Backend application
   backend:
     build: .
     depends_on:
       - mongo
+      - postgres
     environment:
       - MONGODB_URI=mongodb://mongo:27017/newsfilter
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432/newsfilter
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - INTERNAL_API_KEY=change-me
     ports:
       - "8080:8080"
     restart: unless-stopped
+
 volumes:
   mongo_data:
+  postgres_data:

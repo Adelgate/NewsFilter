@@ -49,8 +49,8 @@ public class NewsController {
     public ResponseEntity<List<NewsResponse>> latest(
             @RequestParam(name = "limit", required = false) Integer limit,
             @RequestParam(name = "topics", required = false) String topics,
-            @RequestParam(name = "source", required = false) String source) {
-        return ResponseEntity.ok(newsService.getLatest(limit, topics, source));
+            @RequestParam(name = "sourceId", required = false) Long sourceId) {
+        return ResponseEntity.ok(newsService.getLatest(limit, topics, sourceId));
     }
 
     @Operation(summary = "Full-text search")
