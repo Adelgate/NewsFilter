@@ -1,6 +1,6 @@
 package com.newsfilter.demofilter.repository;
 
-import com.newsfilter.entity.News;
+import com.newsfilter.demofilter.entity.News;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;

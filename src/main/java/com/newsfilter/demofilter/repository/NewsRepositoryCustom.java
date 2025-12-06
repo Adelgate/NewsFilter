@@ -1,6 +1,6 @@
 package com.newsfilter.demofilter.repository;
 
-import com.newsfilter.entity.News;
+import com.newsfilter.demofilter.entity.News;
 
 import java.util.List;
 

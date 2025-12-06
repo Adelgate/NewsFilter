@@ -1,6 +1,6 @@
 package com.newsfilter.demofilter.repository;
 
-import com.newsfilter.entity.News;
+import com.newsfilter.demofilter.entity.News;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;

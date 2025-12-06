@@ -1,11 +1,10 @@
 package com.newsfilter.demofilter.service;
 
-import com.newsfilter.repository.NewsRepository;
-import com.newsfilter.repository.TopicAggregation;
+import com.newsfilter.demofilter.repository.NewsRepository;
+import com.newsfilter.demofilter.repository.TopicAggregation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

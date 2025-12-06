@@ -1,10 +1,10 @@
 package com.newsfilter.demofilter.controller;
 
-import com.newsfilter.config.InternalAuthProperties;
-import com.newsfilter.dto.NewsRequest;
-import com.newsfilter.dto.NewsResponse;
-import com.newsfilter.exception.UnauthorizedAccessException;
-import com.newsfilter.service.NewsService;
+import com.newsfilter.demofilter.config.InternalAuthProperties;
+import com.newsfilter.demofilter.dto.NewsRequest;
+import com.newsfilter.demofilter.dto.NewsResponse;
+import com.newsfilter.demofilter.exception.UnauthorizedAccessException;
+import com.newsfilter.demofilter.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
