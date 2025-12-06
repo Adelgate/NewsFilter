@@ -10,55 +10,40 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-import com.newsfilter.demofilter.domain.jpa.Source;
-import com.newsfilter.demofilter.repository.jpa.SourceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public abstract class NewsMapper {
+public interface NewsMapper {
 
-    @Autowired
-    protected SourceRepository sourceRepository;
-
+    // Basic mapping - service will handle additional fields
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "fetchedAt", ignore = true)
+    @Mapping(target = "sourceId", ignore = true)
+    @Mapping(target = "title", ignore = true) // Will be extracted from text
     @Mapping(target = "content", source = "text")
+    @Mapping(target = "summary", ignore = true) // Can be generated later
+    @Mapping(target = "author", ignore = true)
     @Mapping(target = "imageUrl", source = "mediaUrl")
     @Mapping(target = "publishedAt", source = "postedAt")
     @Mapping(target = "url", source = "link")
-    @Mapping(target = "sourceId", expression = "java(resolveSourceId(request.source()))")
-    public abstract NewsDocument toDocument(NewsRequest request);
+    @Mapping(target = "fetchedAt", ignore = true)
+    @Mapping(target = "rawPayload", ignore = true)
+    @Mapping(target = "metadata", ignore = true)
+    NewsDocument toDocument(NewsRequest request);
 
     @Mapping(target = "id", expression = "java(mapId(newsDocument.getId()))")
+    @Mapping(target = "source", expression = "java(mapSourceId(newsDocument.getSourceId()))")
     @Mapping(target = "text", source = "content")
     @Mapping(target = "mediaUrl", source = "imageUrl")
     @Mapping(target = "postedAt", source = "publishedAt")
     @Mapping(target = "link", source = "url")
-    @Mapping(target = "source", expression = "java(resolveSourceName(newsDocument.getSourceId()))")
     @Mapping(target = "createdAt", source = "fetchedAt")
-    public abstract NewsResponse toResponse(NewsDocument newsDocument);
+    NewsResponse toResponse(NewsDocument newsDocument);
 
-    public abstract List<NewsResponse> toResponseList(List<NewsDocument> newsDocuments);
+    List<NewsResponse> toResponseList(List<NewsDocument> newsDocuments);
 
-    protected String mapId(ObjectId id) {
+    default String mapId(ObjectId id) {
         return id != null ? id.toHexString() : null;
     }
 
-    protected Long resolveSourceId(String outputSourceName) {
-        if (outputSourceName == null) {
-            return null;
-        }
-        return sourceRepository.findByName(outputSourceName)
-                .map(Source::getId)
-                .orElse(null);
-    }
-
-    protected String resolveSourceName(Long sourceId) {
-        if (sourceId == null) {
-            return null;
-        }
-        return sourceRepository.findById(sourceId)
-                .map(Source::getName)
-                .orElse(null);
+    default String mapSourceId(Long sourceId) {
+        return sourceId != null ? "source-" + sourceId : "unknown";
     }
 }

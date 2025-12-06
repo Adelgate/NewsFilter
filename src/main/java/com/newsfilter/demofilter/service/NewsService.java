@@ -1,11 +1,13 @@
 package com.newsfilter.demofilter.service;
 
+import com.newsfilter.demofilter.domain.jpa.Source;
 import com.newsfilter.demofilter.domain.mongo.NewsDocument;
 import com.newsfilter.demofilter.dto.NewsRequest;
 import com.newsfilter.demofilter.dto.NewsResponse;
 import com.newsfilter.demofilter.exception.BadRequestException;
 import com.newsfilter.demofilter.exception.NotFoundException;
 import com.newsfilter.demofilter.mapper.NewsMapper;
+import com.newsfilter.demofilter.repository.jpa.SourceRepository;
 import com.newsfilter.demofilter.repository.mongo.NewsDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class NewsService {
 
     private final NewsDocumentRepository newsDocumentRepository;
+    private final SourceRepository sourceRepository;
     private final NewsMapper newsMapper;
     private final LLMService llmService;
 
@@ -62,12 +65,34 @@ public class NewsService {
     }
 
     private NewsDocument buildDocumentWithTopics(NewsRequest request) {
+        // Map basic fields via mapper
         NewsDocument document = newsMapper.toDocument(request);
+
+        // Set timestamp
         document.setFetchedAt(Instant.now());
-        if (CollectionUtils.isEmpty(document.getTopics())) {
+
+        // Resolve and set sourceId from source name
+        Source source = sourceRepository.findByName(request.source())
+                .orElseGet(() -> createDefaultSource(request.source()));
+        document.setSourceId(source.getId());
+
+        // Extract topics if not provided
+        if (CollectionUtils.isEmpty(request.topics())) {
             document.setTopics(llmService.extractTopics(document.getContent()));
         }
+
         return document;
+    }
+
+    private Source createDefaultSource(String sourceName) {
+        log.info("Creating new source: {}", sourceName);
+        Source source = Source.builder()
+                .name(sourceName)
+                .type(Source.SourceType.API)
+                .url("https://example.com/" + sourceName)
+                .active(true)
+                .build();
+        return sourceRepository.save(source);
     }
 
     private List<String> parseTopics(String topics) {
